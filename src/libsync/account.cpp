@@ -129,6 +129,7 @@ void Account::setCredentials(AbstractCredentials *cred)
     // The order for these two is important! Reading the credential's
     // settings accesses the account as well as account->_credentials
     _credentials = cred;
+    qDebug() << cred;
     cred->setAccount(this);
 
     _am = _credentials->getQNAM();

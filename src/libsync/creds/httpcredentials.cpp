@@ -49,8 +49,8 @@ int getauth(const char *prompt,
     HttpCredentials* http_credentials = qobject_cast<HttpCredentials*>(engine->account()->credentials());
 
     if (!http_credentials) {
-      qDebug() << "Not a HTTP creds instance!";
-      return -1;
+        qDebug() << "Not a HTTP creds instance!";
+        return -1;
     }
 
     QString qPrompt = QString::fromLatin1( prompt ).trimmed();
@@ -202,29 +202,32 @@ void HttpCredentials::fetchFromKeychain()
 
     auto settings = _account->settingsWithGroup(Theme::instance()->appName());
     const QString kck = keychainKey(_account->url().toString(), _user );
+        qDebug() << "check";
+        qDebug() << kck;
+       //OwncloudSetupWizard::runWizard(qApp, SLOT(slotownCloudWizardDone(int)));
 
-    QString key = QString::fromLatin1( "%1/data" ).arg( kck );
-    if( settings && settings->contains(key) ) {
-        // Clean the password from the config file if it is in there.
-        // we do not want a security problem.
-        settings->remove(key);
-        key = QString::fromLatin1( "%1/type" ).arg( kck );
-        settings->remove(key);
-        settings->sync();
-    }
+          QString key = QString::fromLatin1( "%1/data" ).arg( kck );
+        if( settings && settings->contains(key) ) {
+            // Clean the password from the config file if it is in there.
+            // we do not want a security problem.
+            settings->remove(key);
+            key = QString::fromLatin1( "%1/type" ).arg( kck );
+            settings->remove(key);
+            settings->sync();
+        }
 
-    if (_ready) {
-        Q_EMIT fetched();
-    } else {
-        ReadPasswordJob *job = new ReadPasswordJob(Theme::instance()->appName());
-        settings->setParent(job); // make the job parent to make setting deleted properly
-        job->setSettings(settings.release());
+        if (_ready) {
+            Q_EMIT fetched();
+        } else {
+            ReadPasswordJob *job = new ReadPasswordJob(Theme::instance()->appName());
+            settings->setParent(job); // make the job parent to make setting deleted properly
+            job->setSettings(settings.release());
 
-        job->setInsecureFallback(false);
-        job->setKey(kck);
-        connect(job, SIGNAL(finished(QKeychain::Job*)), SLOT(slotReadJobDone(QKeychain::Job*)));
-        job->start();
-    }
+            job->setInsecureFallback(false);
+            job->setKey(kck);
+            connect(job, SIGNAL(finished(QKeychain::Job*)), SLOT(slotReadJobDone(QKeychain::Job*)));
+            job->start();
+        }
 }
 bool HttpCredentials::stillValid(QNetworkReply *reply)
 {
@@ -322,7 +325,13 @@ void HttpCredentials::persist()
     job->setInsecureFallback(false);
     connect(job, SIGNAL(finished(QKeychain::Job*)), SLOT(slotWriteJobDone(QKeychain::Job*)));
     job->setKey(keychainKey(_account->url().toString(), _user));
+    qDebug() << "keychain oringin data";
+    qDebug() << _account->url().toString();
+    qDebug() << "keychain data";
+    qDebug() <<keychainKey(_account->url().toString(), _user);
     job->setTextData(_password);
+    qDebug() << "password";
+    qDebug() << _password;
     job->start();
 }
 

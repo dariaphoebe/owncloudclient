@@ -504,6 +504,7 @@ void PropfindJob::start()
 
     QBuffer *buf = new QBuffer(this);
     buf->setData(xml);
+    qDebug() << xml;
     buf->open(QIODevice::ReadOnly);
     setReply(davRequest("PROPFIND", path(), req, buf));
     buf->setParent(reply());

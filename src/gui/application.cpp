@@ -72,7 +72,7 @@ static const char optionsC[] =
 QString applicationTrPath()
 {
 #if defined(Q_OS_WIN)
-   return QApplication::applicationDirPath();
+    return QApplication::applicationDirPath();
 #elif defined(Q_OS_MAC)
     return QApplication::applicationDirPath()+QLatin1String("/../Resources/Translations"); // path defaults to app dir.
 #elif defined(Q_OS_UNIX)
@@ -95,8 +95,8 @@ Application::Application(int &argc, char **argv) :
     _userTriggeredConnect(false),
     _debugMode(false)
 {
-// TODO: Can't set this without breaking current config pathes
-//    setOrganizationName(QLatin1String(APPLICATION_VENDOR));
+    // TODO: Can't set this without breaking current config pathes
+    //    setOrganizationName(QLatin1String(APPLICATION_VENDOR));
     setOrganizationDomain(QLatin1String(APPLICATION_REV_DOMAIN));
     setApplicationName( _theme->appNameGUI() );
     setWindowIcon( _theme->applicationIcon() );
@@ -216,6 +216,20 @@ void Application::slotCleanup()
 void Application::slotCheckConnection()
 {
     auto list = AccountManager::instance()->accounts();
+
+    //Check if config file have set url but no user
+    QString AccountCheck = list[0].data()->account()->displayName();
+    //If config file have url but no user clear user_lists
+    if(AccountCheck[0] =='@'){
+        qDebug() << "list test";
+        qDebug() << list[0].data()->account()->displayName();
+        qDebug() << list[0].data()->account()->url();
+        list.clear();
+        if (list.isEmpty()) {
+            qDebug() << "list empty";
+        }
+    }
+
     foreach (const auto &accountState , list) {
         AccountState::State state = accountState->state();
 
@@ -312,13 +326,13 @@ void Application::parseOptions(const QStringList &options)
             _showLogWindow = true;
         } else if (option == QLatin1String("--logfile")) {
             if (it.hasNext() && !it.peekNext().startsWith(QLatin1String("--"))) {
-               _logFile = it.next();
+                _logFile = it.next();
             } else {
                 showHint("Log file not specified");
             }
         } else if (option == QLatin1String("--logdir")) {
             if (it.hasNext() && !it.peekNext().startsWith(QLatin1String("--"))) {
-               _logDir = it.next();
+                _logDir = it.next();
             } else {
                 showHint("Log dir not specified");
             }
@@ -441,12 +455,12 @@ void Application::setupTranslations()
 {
     QStringList uiLanguages;
     // uiLanguages crashes on Windows with 4.8.0 release builds
-    #if (QT_VERSION >= 0x040801) || (QT_VERSION >= 0x040800 && !defined(Q_OS_WIN))
-        uiLanguages = QLocale::system().uiLanguages();
-    #else
-        // older versions need to fall back to the systems locale
-        uiLanguages << QLocale::system().name();
-    #endif
+#if (QT_VERSION >= 0x040801) || (QT_VERSION >= 0x040800 && !defined(Q_OS_WIN))
+    uiLanguages = QLocale::system().uiLanguages();
+#else
+    // older versions need to fall back to the systems locale
+    uiLanguages << QLocale::system().name();
+#endif
 
     QString enforcedLocale = Theme::instance()->enforcedLocale();
     if (!enforcedLocale.isEmpty())
@@ -462,7 +476,7 @@ void Application::setupTranslations()
         const QString trPath = applicationTrPath();
         const QString trFile = QLatin1String("client_") + lang;
         if (translator->load(trFile, trPath) ||
-            lang.startsWith(QLatin1String("en"))) {
+                lang.startsWith(QLatin1String("en"))) {
             // Permissive approach: Qt and keychain translations
             // may be missing, but Qt translations must be there in order
             // for us to accept the language. Otherwise, we try with the next.

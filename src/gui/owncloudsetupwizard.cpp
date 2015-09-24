@@ -78,11 +78,23 @@ void OwncloudSetupWizard::runWizard(QObject* obj, const char* amember, QWidget *
 
 void OwncloudSetupWizard::startWizard()
 {
+    //Load user from config and get url
+    AccountPtr account_tmp = AccountManager::instance()->accounts()[0].data()->account();
+    AccountState* accountState_tmp = AccountManager::instance()->accounts()[0].data();
+
     AccountPtr account = AccountManager::createAccount();
     account->setCredentials(CredentialsFactory::create("dummy"));
-    account->setUrl(Theme::instance()->overrideServerUrl());
+
+    //Load from config, do not override
+    //account->setUrl(Theme::instance()->overrideServerUrl());
+
     _ocWizard->setAccount(account);
-    _ocWizard->setOCUrl(account->url().toString());
+    _ocWizard->setOCUrl(account_tmp->url().toString());
+
+    //Delete user from config file
+    auto manager = AccountManager::instance();
+    manager->deleteAccount(accountState_tmp);
+    manager->save();
 
     _remoteFolder = Theme::instance()->defaultServerFolder();
     // remoteFolder may be empty, which means /
@@ -108,7 +120,7 @@ void OwncloudSetupWizard::startWizard()
     _ocWizard->setRemoteFolder(_remoteFolder);
 
     _ocWizard->setStartId(WizardCommon::Page_ServerSetup);
-
+    //_ocWizard->setStartId(WizardCommon::Page_HttpCreds);
     _ocWizard->restart();
 
     _ocWizard->open();
@@ -188,7 +200,7 @@ void OwncloudSetupWizard::slotConnectToOCUrl( const QString& url )
     qDebug() << "Connect to url: " << url;
     AbstractCredentials *creds = _ocWizard->getCredentials();
     _ocWizard->account()->setCredentials(creds);
-    _ocWizard->setField(QLatin1String("OCUrl"), url );
+    _ocWizard->setField(QLatin1String("OCUrl"), "url" );
     _ocWizard->appendToConfigurationLog(tr("Trying to connect to %1 at %2...")
                                         .arg( Theme::instance()->appNameGUI() ).arg(url) );
 

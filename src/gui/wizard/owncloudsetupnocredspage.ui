@@ -89,6 +89,9 @@
          </item>
          <item>
           <widget class="Utils::FancyLineEdit" name="leUrl">
+           <property name="enabled">
+            <bool>false</bool>
+           </property>
            <property name="sizePolicy">
             <sizepolicy hsizetype="MinimumExpanding" vsizetype="Preferred">
              <horstretch>0</horstretch>
@@ -189,9 +192,6 @@
     </widget>
    </item>
   </layout>
-  <zorder>topLabel</zorder>
-  <zorder>errorLabel</zorder>
-  <zorder>bottomLabel</zorder>
  </widget>
  <customwidgets>
   <customwidget>

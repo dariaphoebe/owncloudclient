@@ -148,8 +148,12 @@ void ownCloudGui::setupOverlayIcons()
 // This should rather be in application.... or rather in ConfigFile?
 void ownCloudGui::slotOpenSettingsDialog()
 {
+    auto list = AccountManager::instance()->accounts();
+    QString AccountCheck = list[0].data()->account()->displayName();
     // if account is set up, start the configuration wizard.
-    if( !AccountManager::instance()->accounts().isEmpty() ) {
+    if( !list.isEmpty() && AccountCheck[0] !='@') {
+        qDebug() << "Account is empty";
+        qDebug() << AccountCheck[0];
         if (_settingsDialog.isNull() || !_settingsDialog->isVisible()) {
             slotShowSettings();
         } else {
