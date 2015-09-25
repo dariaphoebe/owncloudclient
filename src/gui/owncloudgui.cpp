@@ -49,11 +49,11 @@ const char propertyAccountC[] = "oc_account";
 ownCloudGui::ownCloudGui(Application *parent) :
     QObject(parent),
     _tray(0),
-#if defined(Q_OS_MAC)
+    #if defined(Q_OS_MAC)
     _settingsDialog(new SettingsDialogMac(this)),
-#else
+    #else
     _settingsDialog(new SettingsDialog(this)),
-#endif
+    #endif
     _logBrowser(0),
     _recentActionsMenu(0),
     _qdbusmenuWorkaround(false),
@@ -124,20 +124,20 @@ void ownCloudGui::setupOverlayIcons()
                                                 "  end try\n"
                                                 "end tell\n");
 
-              QString osascript = "/usr/bin/osascript";
-              QStringList processArguments;
-              // processArguments << "-l" << "AppleScript";
+            QString osascript = "/usr/bin/osascript";
+            QStringList processArguments;
+            // processArguments << "-l" << "AppleScript";
 
-              QProcess p;
-              p.start(osascript, processArguments);
-              p.write(aScript.toUtf8());
-              p.closeWriteChannel();
-              //p.waitForReadyRead(-1);
-              p.waitForFinished(5000);
-              QByteArray result = p.readAll();
-              QString resultAsString(result); // if appropriate
-              qDebug() << "Laod Finder Overlay-Plugin: " << resultAsString << ": " << p.exitCode()
-                       << (p.exitCode() != 0 ? p.errorString() : QString::null);
+            QProcess p;
+            p.start(osascript, processArguments);
+            p.write(aScript.toUtf8());
+            p.closeWriteChannel();
+            //p.waitForReadyRead(-1);
+            p.waitForFinished(5000);
+            QByteArray result = p.readAll();
+            QString resultAsString(result); // if appropriate
+            qDebug() << "Laod Finder Overlay-Plugin: " << resultAsString << ": " << p.exitCode()
+                     << (p.exitCode() != 0 ? p.errorString() : QString::null);
         } else  {
             qDebug() << finderExtension << "does not exist! Finder Overlay Plugin loading failed";
         }
@@ -148,18 +148,28 @@ void ownCloudGui::setupOverlayIcons()
 // This should rather be in application.... or rather in ConfigFile?
 void ownCloudGui::slotOpenSettingsDialog()
 {
+    qDebug() << "test1";
+    bool CheckConfig = true;
     auto list = AccountManager::instance()->accounts();
-    QString AccountCheck = list[0].data()->account()->displayName();
     // if account is set up, start the configuration wizard.
-    if( !list.isEmpty() && AccountCheck[0] !='@') {
-        qDebug() << "Account is empty";
-        qDebug() << AccountCheck[0];
-        if (_settingsDialog.isNull() || !_settingsDialog->isVisible()) {
-            slotShowSettings();
-        } else {
-            _settingsDialog->close();
+    if( !list.isEmpty() ) {
+        qDebug() << "test2";
+        QString AccountCheck = list[0].data()->account()->displayName();
+        qDebug() << AccountCheck;
+        if(AccountCheck[0] !='@')
+        {
+            CheckConfig = false;
+            qDebug() << "Account is not empty";
+            qDebug() << AccountCheck[0];
+            if (_settingsDialog.isNull() || !_settingsDialog->isVisible()) {
+
+                slotShowSettings();
+            } else {
+                _settingsDialog->close();
+            }
         }
-    } else {
+    }
+    if(CheckConfig){
         qDebug() << "No configured folders yet, starting setup wizard";
         OwncloudSetupWizard::runWizard(qApp, SLOT(slotownCloudWizardDone(int)));
     }
@@ -249,13 +259,13 @@ void ownCloudGui::slotComputeOverallSyncStatus()
             accountNames.append(a->account()->displayName());
         }
         _tray->setToolTip(tr("Disconnected from %1").arg(
-                accountNames.join(QLatin1String(", "))));
+                              accountNames.join(QLatin1String(", "))));
 #else
         QStringList messages;
         messages.append(tr("Disconnected from accounts:"));
         foreach (AccountStatePtr a, problemAccounts) {
             QString message = tr("Account %1: %2").arg(
-                    a->account()->displayName(), a->stateString(a->state()));
+                        a->account()->displayName(), a->stateString(a->state()));
             if (! a->connectionErrors().empty()) {
                 message += QLatin1String("\n");
                 message += a->connectionErrors().join(QLatin1String("\n"));
@@ -566,12 +576,12 @@ void ownCloudGui::slotUpdateProgress(const QString &folder, const ProgressInfo& 
         quint64 currentFile = progress.currentFile();
         quint64 totalFileCount = qMax(progress.totalFiles(), currentFile);
         _actionStatus->setText( tr("Syncing %1 of %2  (%3 left)")
-            .arg( currentFile ).arg( totalFileCount )
-            .arg( Utility::durationToDescriptiveString(progress.totalProgress().estimatedEta) ) );
+                                .arg( currentFile ).arg( totalFileCount )
+                                .arg( Utility::durationToDescriptiveString(progress.totalProgress().estimatedEta) ) );
     } else {
         QString totalSizeStr = Utility::octetsToString( progress.totalSize() );
         _actionStatus->setText( tr("Syncing %1 (%2 left)")
-            .arg( totalSizeStr, Utility::durationToDescriptiveString(progress.totalProgress().estimatedEta) ) );
+                                .arg( totalSizeStr, Utility::durationToDescriptiveString(progress.totalProgress().estimatedEta) ) );
     }
 
 
@@ -669,7 +679,7 @@ void ownCloudGui::slotShowSettings()
     qDebug() << Q_FUNC_INFO;
     if (_settingsDialog.isNull()) {
         _settingsDialog =
-#if defined(Q_OS_MAC)
+        #if defined(Q_OS_MAC)
                 new SettingsDialogMac(this);
 #else
                 new SettingsDialog(this);

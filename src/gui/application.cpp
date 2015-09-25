@@ -217,19 +217,20 @@ void Application::slotCheckConnection()
 {
     auto list = AccountManager::instance()->accounts();
 
-    //Check if config file have set url but no user
-    QString AccountCheck = list[0].data()->account()->displayName();
-    //If config file have url but no user clear user_lists
-    if(AccountCheck[0] =='@'){
-        qDebug() << "list test";
-        qDebug() << list[0].data()->account()->displayName();
-        qDebug() << list[0].data()->account()->url();
-        list.clear();
-        if (list.isEmpty()) {
-            qDebug() << "list empty";
+    if(!list.isEmpty()){
+        //Check if config file have set url but no user
+        QString AccountCheck = list[0].data()->account()->displayName();
+        //If config file have url but no user clear user_lists
+        if(AccountCheck[0] =='@'){
+            qDebug() << "list test";
+            qDebug() << list[0].data()->account()->displayName();
+            qDebug() << list[0].data()->account()->url();
+            list.clear();
+            if (list.isEmpty()) {
+                qDebug() << "list empty";
+            }
         }
     }
-
     foreach (const auto &accountState , list) {
         AccountState::State state = accountState->state();
 

@@ -79,22 +79,26 @@ void OwncloudSetupWizard::runWizard(QObject* obj, const char* amember, QWidget *
 void OwncloudSetupWizard::startWizard()
 {
     //Load user from config and get url
-    AccountPtr account_tmp = AccountManager::instance()->accounts()[0].data()->account();
-    AccountState* accountState_tmp = AccountManager::instance()->accounts()[0].data();
-
+    auto list = AccountManager::instance()->accounts();
     AccountPtr account = AccountManager::createAccount();
+    _ocWizard->setAccount(account);
+
+    if(list.isEmpty()){
+        _ocWizard->setOCUrl(account->url().toString());
+        account->setUrl(Theme::instance()->overrideServerUrl());
+    }
+    else{
+        AccountPtr account_tmp = AccountManager::instance()->accounts()[0].data()->account();
+        AccountState* accountState_tmp = AccountManager::instance()->accounts()[0].data();
+        _ocWizard->setOCUrl(account_tmp->url().toString());
+        //Delete user from config file
+        auto manager = AccountManager::instance();
+        manager->deleteAccount(accountState_tmp);
+        manager->save();
+    }
     account->setCredentials(CredentialsFactory::create("dummy"));
 
-    //Load from config, do not override
-    //account->setUrl(Theme::instance()->overrideServerUrl());
 
-    _ocWizard->setAccount(account);
-    _ocWizard->setOCUrl(account_tmp->url().toString());
-
-    //Delete user from config file
-    auto manager = AccountManager::instance();
-    manager->deleteAccount(accountState_tmp);
-    manager->save();
 
     _remoteFolder = Theme::instance()->defaultServerFolder();
     // remoteFolder may be empty, which means /

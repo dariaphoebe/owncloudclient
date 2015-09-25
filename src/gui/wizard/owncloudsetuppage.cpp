@@ -73,12 +73,17 @@ OwncloudSetupPage::OwncloudSetupPage(QWidget *parent)
 
 void OwncloudSetupPage::setServerUrl( const QString& newUrl )
 {
+    qDebug() << "Testing URL";
+    qDebug() << newUrl;
+    //If config file have url, dont let user edit it
+    if(!newUrl.isEmpty()){
+        _ui.leUrl->setEnabled(false);
+    }
     _oCUrl = newUrl;
     if( _oCUrl.isEmpty() ) {
         _ui.leUrl->clear();
         return;
     }
-
     _ui.leUrl->setText( _oCUrl );
 }
 
