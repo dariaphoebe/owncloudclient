@@ -216,15 +216,14 @@ void Application::slotCleanup()
 void Application::slotCheckConnection()
 {
     auto list = AccountManager::instance()->accounts();
-
     if(!list.isEmpty()){
         //Check if config file have set url but no user
-        QString AccountCheck = list[0].data()->account()->displayName();
+        QString AccountCheck = list.first().data()->account()->displayName();
         //If config file have url but no user clear user_lists
-        if(AccountCheck[0] =='@'){
+        if(AccountCheck.at(0) =='@'){
             qDebug() << "list test";
-            qDebug() << list[0].data()->account()->displayName();
-            qDebug() << list[0].data()->account()->url();
+            qDebug() << list.first()->account()->displayName();
+            qDebug() << list.first()->account()->url();
             list.clear();
             if (list.isEmpty()) {
                 qDebug() << "list empty";

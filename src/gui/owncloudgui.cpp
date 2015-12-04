@@ -154,13 +154,13 @@ void ownCloudGui::slotOpenSettingsDialog()
     // if account is set up, start the configuration wizard.
     if( !list.isEmpty() ) {
         qDebug() << "test2";
-        QString AccountCheck = list[0].data()->account()->displayName();
+        QString AccountCheck = list.first().data()->account()->displayName();
         qDebug() << AccountCheck;
-        if(AccountCheck[0] !='@')
+        if(AccountCheck.at(0) !='@')
         {
             CheckConfig = false;
             qDebug() << "Account is not empty";
-            qDebug() << AccountCheck[0];
+            qDebug() << AccountCheck.at(0);
             if (_settingsDialog.isNull() || !_settingsDialog->isVisible()) {
 
                 slotShowSettings();

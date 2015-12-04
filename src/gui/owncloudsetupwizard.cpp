@@ -88,12 +88,12 @@ void OwncloudSetupWizard::startWizard()
         account->setUrl(Theme::instance()->overrideServerUrl());
     }
     else{
-        AccountPtr account_tmp = AccountManager::instance()->accounts()[0].data()->account();
-        AccountState* accountState_tmp = AccountManager::instance()->accounts()[0].data();
-        _ocWizard->setOCUrl(account_tmp->url().toString());
+        AccountState* accountStatetmp = AccountManager::instance()->accounts().first().data();
+        AccountPtr accountTmp = accountStatetmp->account();
+        _ocWizard->setOCUrl(accountTmp->url().toString());
         //Delete user from config file
         auto manager = AccountManager::instance();
-        manager->deleteAccount(accountState_tmp);
+        manager->deleteAccount(accountStatetmp);
         manager->save();
     }
     account->setCredentials(CredentialsFactory::create("dummy"));
